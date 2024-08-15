@@ -21,9 +21,8 @@ public class ValueOfEnumValidator implements ConstraintValidator<ValueOfEnum, En
     @Override
     public boolean isValid(Enum<?> value, ConstraintValidatorContext context) {
         if (value == null) {
-            return true; // Allow null values, use @NotNull for null checks
+            return true;
         }
         return acceptedValues.contains(value.name());
     }
 }
-
