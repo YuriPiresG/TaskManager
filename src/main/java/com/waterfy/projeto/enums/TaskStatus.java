@@ -1,4 +1,4 @@
-package com.waterfy.projeto.tasks;
+package com.waterfy.projeto.enums;
 
 public enum TaskStatus {
     PENDING,
