@@ -59,6 +59,9 @@ Este é um projeto de demonstração utilizando Spring Boot. O projeto inclui um
 - **Docker Compose**: Utilizado para configurar e executar o banco de dados PostgreSQL de forma simples.
 - **Validação**: Utilizado `jakarta.validation` para validar os campos das entidades.
 
+### DER do Banco de Dados
+![DER](DER.png)
+
 ## Endpoints da API
 
 - `GET /tasks`: Retorna todas as tarefas.
