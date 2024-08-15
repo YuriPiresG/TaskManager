@@ -2,9 +2,9 @@ package com.waterfy.projeto.tasks;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.waterfy.projeto.enums.TaskStatus;
 import com.waterfy.projeto.exception.TaskNotFoundException;
 
 import lombok.AllArgsConstructor;
@@ -12,15 +12,14 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class TasksServices {
-    @Autowired
-    private final TasksRepository tasksRepository;
+    
+    private TasksRepository tasksRepository;
 
-    public List<Task> getTasks() {
-        return tasksRepository.findAll();
-    }
-
-    public List<Task> getUncompletedTasks() {
-        return tasksRepository.findUncompletedTasks();
+    public List<Task> getTasksWithParams(TaskStatus status) {
+        if (status == null) {
+            return tasksRepository.findAll();
+        }
+        return tasksRepository.findTaskByParameters(status);
     }
 
     public Task getTaskById(Long id) {

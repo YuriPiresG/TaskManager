@@ -15,14 +15,14 @@ import jakarta.transaction.Transactional;
 @Repository
 public interface TasksRepository extends JpaRepository<Task, Long> {
 
+    @Query("SELECT t FROM task t WHERE t.status = ?1")
+    List<Task> findTaskByParameters(TaskStatus status);
+
     @Transactional
     @Modifying
     @Query("UPDATE task t SET t.title = ?1, t.description = ?2, t.dueDate = ?3, t.finishedAt = ?4, t.status = ?5 WHERE t.id = ?6")
     int updateTask(String title, String description, LocalDate dueDate, LocalDate finishedAt, TaskStatus status,
             Long id);
-
-    @Query("SELECT t FROM task t WHERE t.status != 'COMPLETED'")
-    List<Task> findUncompletedTasks();
 
     @Transactional
     @Modifying
