@@ -23,4 +23,9 @@ public interface TasksRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT t FROM task t WHERE t.status != 'COMPLETED'")
     List<Task> findUncompletedTasks();
+
+    @Transactional
+    @Modifying
+    @Query("DELETE FROM task t WHERE t.status = 'COMPLETED'")
+    void deleteCompletedTasks();
 }

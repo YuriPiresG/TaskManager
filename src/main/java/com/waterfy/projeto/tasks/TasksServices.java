@@ -18,6 +18,7 @@ public class TasksServices {
     public List<Task> getTasks() {
         return tasksRepository.findAll();
     }
+
     public List<Task> getUncompletedTasks() {
         return tasksRepository.findUncompletedTasks();
     }
@@ -44,5 +45,19 @@ public class TasksServices {
                 task.getFinishedAt(),
                 task.getStatus(),
                 id);
+    }
+
+    public void deleteTask(Long id) {
+        tasksRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
+        tasksRepository.deleteById(id);
+    }
+
+    public void deleteAllTasks() {
+        tasksRepository.deleteAll();
+    }
+
+    public void deleteCompletedTasks() {
+        tasksRepository.deleteCompletedTasks();
     }
 }

@@ -2,6 +2,7 @@ package com.waterfy.projeto.tasks;
 
 import java.util.List;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,5 +43,20 @@ public class TasksController {
     @PutMapping(path = "/{id}")
     public int putMethodName(@PathVariable Long id, @RequestBody Task task) {
         return tasksServices.updateTask(id, task);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public void deleteTask(@PathVariable Long id) {
+        tasksServices.deleteTask(id);
+    }
+
+    @DeleteMapping()
+    public void deleteAllTasks() {
+        tasksServices.deleteAllTasks();
+    }
+
+    @DeleteMapping(path = "/completed")
+    public void deleteCompletedTasks() {
+        tasksServices.deleteCompletedTasks();
     }
 }
