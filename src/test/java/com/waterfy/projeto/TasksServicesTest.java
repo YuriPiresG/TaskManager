@@ -117,7 +117,7 @@ public class TasksServicesTest {
         updatedTask.setFinishedAt(LocalDate.now());
         updatedTask.setStatus(TaskStatus.COMPLETED);
 
-        int result = tasksServices.updateTask(1L, updatedTask);
+        Task result = tasksServices.updateTask(1L, updatedTask);
 
         assertEquals(1, result);
     }

@@ -12,7 +12,7 @@ import lombok.AllArgsConstructor;
 @Service
 @AllArgsConstructor
 public class TasksServices {
-    
+
     private TasksRepository tasksRepository;
 
     public List<Task> getTasksWithParams(TaskStatus status) {
@@ -25,7 +25,6 @@ public class TasksServices {
     public Task getTaskById(Long id) {
         return tasksRepository.findById(id)
                 .stream()
-                .filter(task -> task.getId().equals(id))
                 .findFirst()
                 .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
     }
@@ -34,16 +33,18 @@ public class TasksServices {
         return tasksRepository.save(task);
     }
 
-    public int updateTask(Long id, Task task) {
-        tasksRepository.findById(id)
+    public Task updateTask(Long id, Task task) {
+        Task foundTask = tasksRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
-        return tasksRepository.updateTask(
-                task.getTitle(),
-                task.getDescription(),
-                task.getDueDate(),
-                task.getFinishedAt(),
-                task.getStatus(),
-                id);
+
+        foundTask.setId(id);
+        foundTask.setDescription(task.getDescription());
+        foundTask.setDueDate(task.getDueDate());
+        foundTask.setFinishedAt(task.getFinishedAt());
+        foundTask.setStatus(task.getStatus());
+        foundTask.setTitle(task.getTitle());
+
+        return tasksRepository.save(foundTask);
     }
 
     public void deleteTask(Long id) {

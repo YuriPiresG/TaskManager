@@ -96,13 +96,21 @@ public class TasksControllerTest {
 
         @Test
         public void testPutMethodName() throws Exception {
-                when(tasksServices.updateTask(eq(1L), any(Task.class))).thenReturn(1);
+                Task updatedTask = new Task();
+                updatedTask.setId(1L);
+                updatedTask.setTitle("Updated Title");
+                updatedTask.setDescription("Updated Description");
+                updatedTask.setDueDate(LocalDate.parse("2023-01-01"));
+                updatedTask.setFinishedAt(LocalDate.parse("2023-01-01"));
+                updatedTask.setStatus(TaskStatus.COMPLETED);
+
+                when(tasksServices.updateTask(eq(1L), any(Task.class))).thenReturn(updatedTask);
 
                 mockMvc.perform(put("/tasks/1")
                                 .contentType(MediaType.APPLICATION_JSON)
-                                .content("{\"id\":1,\"title\":\"Updated Title\",\"description\":\"Updated Description\",\"startDate\":\"2023-01-01\",\"endDate\":\"2023-01-01\",\"status\":\"COMPLETED\"}"))
+                                .content("{\"id\":1,\"title\":\"Updated Title\",\"description\":\"Updated Description\",\"dueDate\":\"2023-01-01\",\"finishedAt\":\"2023-01-01\",\"status\":\"COMPLETED\"}"))
                                 .andExpect(status().isOk())
-                                .andExpect(content().string("1"));
+                                .andExpect(jsonPath("$.id").value(1));
 
                 verify(tasksServices, times(1)).updateTask(eq(1L), any(Task.class));
         }

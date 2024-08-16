@@ -6,36 +6,41 @@ Este é um projeto de demonstração utilizando Spring Boot. O projeto inclui um
 
 ### Pré-requisitos
 
-- Java 22
-- Maven
-- Docker
+- [Java 22](https://www.oracle.com/br/java/technologies/downloads/#jdk22-windows)
+- [Maven 3.9.4](https://maven.apache.org/download.cgi)
+- [Docker](https://www.docker.com/products/docker-desktop/)
 
 ### Passos para configurar o projeto
 
 1. Clone o repositório:
-    ```sh
-    git clone https://github.com/YuriPiresG/waterfyProject.git
-    cd projeto
-    ```
+
+   ```sh
+   git clone https://github.com/YuriPiresG/waterfyProject.git
+   cd waterfyProject
+   ```
 
 2. Configure o banco de dados PostgreSQL utilizando Docker:
-    ```sh
-    docker-compose up -d
-    ```
+
+   ```sh
+   docker-compose up -d
+   ```
 
 3. Instale as dependências do projeto:
-    ```sh
-    mvn clean install
-    ```
+   ```sh
+   mvn clean install
+   ```
 
 ## Executando o Projeto
 
 1. Execute a aplicação:
-    ```sh
-    mvn spring-boot:run
-    ```
+
+   ```sh
+   mvn spring-boot:run
+   ```
 
 2. A aplicação estará disponível em `http://localhost:8080/tasks`.
+
+3. O Swagger estará disponível em `http://localhost:8080/swagger-ui/index.html#/`.
 
 ## Estrutura do Projeto
 
@@ -60,6 +65,7 @@ Este é um projeto de demonstração utilizando Spring Boot. O projeto inclui um
 - **Validação**: Utilizado `jakarta.validation` para validar os campos das entidades.
 
 ### DER do Banco de Dados
+
 ![DER](DER.png)
 
 ## Endpoints da API
