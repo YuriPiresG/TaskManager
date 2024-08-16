@@ -1,7 +1,13 @@
 package com.waterfy.projeto.tasks;
 
 import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.waterfy.projeto.enums.TaskStatus;
@@ -15,11 +21,13 @@ public class TasksServices {
 
     private TasksRepository tasksRepository;
 
-    public List<Task> getTasksWithParams(TaskStatus status) {
+    public List<Task> getTasksWithParams(TaskStatus status, int page, int size) {
         if (status == null) {
-            return tasksRepository.findAll();
+            return tasksRepository.findAll(PageRequest.of(page, size)).toList();
         }
-        return tasksRepository.findTaskByParameters(status);
+        Sort sort = Sort.by(Sort.Direction.ASC, "dueDate");
+        Pageable pagedTasks = PageRequest.of(page, size, sort);
+        return tasksRepository.findTaskByParameters(pagedTasks);
     }
 
     public Task getTaskById(Long id) {
@@ -59,5 +67,10 @@ public class TasksServices {
 
     public void deleteCompletedTasks() {
         tasksRepository.deleteCompletedTasks();
+    }
+
+    public void deleteOldTasks() {
+        LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
+        tasksRepository.deleteOldTasks(oneMonthAgo);
     }
 }
