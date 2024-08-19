@@ -23,18 +23,9 @@ Este é um projeto de demonstração utilizando Spring Boot. O projeto inclui um
    ```sh
    docker-compose up --build
    ```
+3. A aplicação estará disponível em `http://localhost:8080/tasks`.
 
-## Executando o Projeto
-
-1. Execute a aplicação:
-
-   ```sh
-   mvn spring-boot:run
-   ```
-
-2. A aplicação estará disponível em `http://localhost:8080/tasks`.
-
-3. O Swagger estará disponível em `http://localhost:8080/swagger-ui/index.html#/`.
+4. O Swagger estará disponível em `http://localhost:8080/swagger-ui/index.html#/`.
 
 ## Estrutura do Projeto
 
