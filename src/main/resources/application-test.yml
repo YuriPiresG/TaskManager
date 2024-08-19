@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: projeto
+  datasource:
+    url: "jdbc:h2:mem:testdb;DB_CLOSE_DELAY"
+    username: sa
+    password: password
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        "[format_sql]": true
+        dialect: org.hibernate.dialect.H2Dialect
+server:
+  error:
+    include-stacktrace: never
+logging:
+  level:
+    org:
+      springframework: DEBUG
+      hibernate: DEBUG
