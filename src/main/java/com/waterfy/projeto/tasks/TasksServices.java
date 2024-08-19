@@ -1,9 +1,7 @@
 package com.waterfy.projeto.tasks;
 
-import java.util.List;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +43,11 @@ public class TasksServices {
         Task foundTask = tasksRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
 
-        foundTask = Task.builder().id(id).description(task.getDescription()).dueDate(task.getDueDate())
+        foundTask = Task.builder()
+                .id(id)
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .dueDate(task.getDueDate())
                 .finishedAt(task.getFinishedAt()).status(task.getStatus()).build();
 
         return tasksRepository.save(foundTask);
@@ -53,7 +55,9 @@ public class TasksServices {
 
     public void deleteTask(Long id) {
         tasksRepository.findById(id)
-                .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
+                .orElseThrow(
+                    () -> new TaskNotFoundException("Task with id " + id + " not found")
+                    );
         tasksRepository.deleteById(id);
     }
 
