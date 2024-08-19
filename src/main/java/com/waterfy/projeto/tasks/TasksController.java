@@ -69,6 +69,7 @@ public class TasksController {
         tasksServices.deleteCompletedTasks();
     }
 
+    //Midnight
     @Scheduled(cron = "0 0 0 * * *")
     @DeleteMapping(path = "/old")
     public void deleteOldTasks() {
