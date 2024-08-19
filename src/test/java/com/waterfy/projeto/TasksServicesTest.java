@@ -1,18 +1,20 @@
 package com.waterfy.projeto;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.waterfy.projeto.enums.TaskStatus;
 import com.waterfy.projeto.exception.TaskNotFoundException;
@@ -20,148 +22,192 @@ import com.waterfy.projeto.tasks.Task;
 import com.waterfy.projeto.tasks.TasksRepository;
 import com.waterfy.projeto.tasks.TasksServices;
 
+@SpringBootTest
+@ActiveProfiles("test")
+@Transactional
 public class TasksServicesTest {
 
-    @Mock
+    @Autowired
     private TasksRepository tasksRepository;
 
-    @InjectMocks
+    @Autowired
     private TasksServices tasksServices;
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
+        tasksRepository.deleteAll();
     }
 
     @Test
-    public void testGetTasksWithParams_NullStatus() {
-        List<Task> tasks = Arrays.asList(new Task(),
-                new Task());
-        when(tasksRepository.findAll()).thenReturn(tasks);
+    public void testGetTasksWithParams_PaginationAndSorting() {
+        Task task1 = Task.builder()
+                .title("title")
+                .dueDate(LocalDate.now().plusDays(1))
+                .status(TaskStatus.COMPLETED)
+                .build();
 
-        List<Task> result = tasksServices.getTasksWithParams(null);
+        Task task2 = Task.builder()
+                .title("title")
+                .dueDate(LocalDate.now().plusDays(2))
+                .status(TaskStatus.COMPLETED)
+                .build();
 
-        assertEquals(2, result.size());
-        verify(tasksRepository, times(1)).findAll();
-    }
+        tasksRepository.save(task1);
+        tasksRepository.save(task2);
 
-    @Test
-    public void testGetTasksWithParams_NonNullStatus() {
-        TaskStatus status = TaskStatus.COMPLETED;
-        List<Task> tasks = Arrays.asList(new Task(),
-                new Task());
-        when(tasksRepository.findTaskByParameters(status)).thenReturn(tasks);
+        List<Task> result = tasksServices.getTasksWithParams(null, 0, 1);
 
-        List<Task> result = tasksServices.getTasksWithParams(status);
-
-        assertEquals(2, result.size());
-        verify(tasksRepository, times(1)).findTaskByParameters(status);
+        assertEquals(1, result.size());
+        assertEquals(task1.getDueDate(), result.get(0).getDueDate());
     }
 
     @Test
     public void testGetTaskById_ExistingId() {
-        Task task = new Task();
-        task.setId(1L);
-        when(tasksRepository.findById(1L)).thenReturn(Optional.of(task));
-
-        Task result = tasksServices.getTaskById(1L);
-
-        assertEquals(1L, result.getId());
-        verify(tasksRepository, times(1)).findById(1L);
+        Task task = Task.builder()
+                .title("title")
+                .dueDate(LocalDate.now().plusDays(1))
+                .finishedAt(LocalDate.now())
+                .status(TaskStatus.COMPLETED)
+                .build();
+    
+        Task savedTask = tasksRepository.save(task);
+    
+        Task result = tasksServices.getTaskById(savedTask.getId());
+    
+        assertEquals(savedTask.getId(), result.getId());
     }
 
     @Test
     public void testGetTaskById_NonExistingId() {
-        when(tasksRepository.findById(1L)).thenReturn(Optional.empty());
-
         assertThrows(TaskNotFoundException.class, () -> tasksServices.getTaskById(1L));
-        verify(tasksRepository, times(1)).findById(1L);
     }
 
     @Test
     public void testSaveTask() {
-        Task task = new Task();
-        when(tasksRepository.save(task)).thenReturn(task);
-
+        Task task = Task.builder()
+                .title("title")
+                .dueDate(LocalDate.now().plusDays(1))
+                .status(TaskStatus.COMPLETED)
+                .build();
         Task result = tasksServices.saveTask(task);
 
-        assertEquals(task, result);
-        verify(tasksRepository, times(1)).save(task);
+        assertNotNull(result.getId());
     }
 
     @Test
     public void testUpdateTask_ExistingId() {
-        Task task = new Task();
-        task.setId(1L);
-        task.setTitle("Original Title");
-        task.setDescription("Original Description");
-        task.setDueDate(LocalDate.now());
-        task.setFinishedAt(LocalDate.now());
-        task.setStatus(TaskStatus.PENDING);
+        Task task = Task.builder()
+                .title("title")
+                .description("Initial Description")
+                .dueDate(LocalDate.now().plusDays(1))
+                .status(TaskStatus.COMPLETED)
+                .build();
 
-        tasksRepository.save(task);
+        tasksServices.saveTask(task);
 
-        when(tasksRepository.findById(1L)).thenReturn(Optional.of(task));
-        when(tasksRepository.updateTask(
-                "Updated Title",
-                "Updated Description",
-                LocalDate.now(),
-                LocalDate.now(),
-                TaskStatus.COMPLETED,
-                1L)).thenReturn(1);
+        Task updatedTask = Task.builder()
+                .title("titleUpdated")
+                .description("Updated Description")
+                .dueDate(LocalDate.now().plusDays(2))
+                .status(TaskStatus.PENDING)
+                .build();
+        Task result = tasksServices.updateTask(task.getId(), updatedTask);
 
-        Task updatedTask = new Task();
-        updatedTask.setTitle("Updated Title");
-        updatedTask.setDescription("Updated Description");
-        updatedTask.setDueDate(LocalDate.now());
-        updatedTask.setFinishedAt(LocalDate.now());
-        updatedTask.setStatus(TaskStatus.COMPLETED);
-
-        Task result = tasksServices.updateTask(1L, updatedTask);
-
-        assertEquals(1, result);
+        assertEquals("Updated Description", result.getDescription());
+        assertEquals("titleUpdated", result.getTitle());
+        assertEquals(LocalDate.now().plusDays(2), result.getDueDate());
+        assertEquals(TaskStatus.PENDING, result.getStatus());
     }
 
     @Test
     public void testUpdateTask_NonExistingId() {
-        Task task = new Task();
-        when(tasksRepository.findById(2L)).thenReturn(Optional.empty());
-
+        Task task = Task.builder().id(2L).build();
         assertThrows(TaskNotFoundException.class, () -> tasksServices.updateTask(1L, task));
-        verify(tasksRepository, times(1)).findById(1L);
     }
 
     @Test
     public void testDeleteTask_ExistingId() {
-        Task task = new Task();
-        task.setId(1L);
-        when(tasksRepository.findById(1L)).thenReturn(Optional.of(task));
+        Task task = Task.builder()
+                .title("title")
+                .dueDate(LocalDate.now().plusDays(1))
+                .status(TaskStatus.COMPLETED)
+                .build();
 
-        tasksServices.deleteTask(1L);
+        tasksRepository.save(task);
 
-        verify(tasksRepository, times(1)).findById(1L);
-        verify(tasksRepository, times(1)).deleteById(1L);
+        tasksServices.deleteTask(task.getId());
+
+        assertFalse(tasksRepository.findById(1L).isPresent());
     }
 
     @Test
     public void testDeleteTask_NonExistingId() {
-        when(tasksRepository.findById(1L)).thenReturn(Optional.empty());
-
         assertThrows(TaskNotFoundException.class, () -> tasksServices.deleteTask(1L));
-        verify(tasksRepository, times(1)).findById(1L);
     }
 
     @Test
     public void testDeleteAllTasks() {
+        Task task1 = Task.builder()
+                .title("title")
+                .dueDate(LocalDate.now().plusDays(1))
+                .status(TaskStatus.COMPLETED)
+                .build();
+
+        Task task2 = Task.builder()
+                .title("title")
+                .dueDate(LocalDate.now().plusDays(1))
+                .status(TaskStatus.COMPLETED)
+                .build();
+
+        tasksRepository.save(task1);
+        tasksRepository.save(task2);
+
         tasksServices.deleteAllTasks();
 
-        verify(tasksRepository, times(1)).deleteAll();
+        assertEquals(0, tasksRepository.findAll().size());
     }
 
     @Test
     public void testDeleteCompletedTasks() {
+        Task task1 = Task.builder()
+                .title("Title")
+                .dueDate(LocalDate.now())
+                .status(TaskStatus.COMPLETED)
+                .build();
+
+        Task task2 = Task.builder()
+                .title("Title")
+                .dueDate(LocalDate.now())
+                .status(TaskStatus.PENDING)
+                .build();
+
+        tasksRepository.save(task1);
+        tasksRepository.save(task2);
+
         tasksServices.deleteCompletedTasks();
 
-        verify(tasksRepository, times(1)).deleteCompletedTasks();
+        assertEquals(1, tasksRepository.findAll().size());
+        assertEquals(TaskStatus.PENDING, tasksRepository.findAll().get(0).getStatus());
     }
+
+    // @Test
+    // public void testDeleteOldTasks() {
+    //     Task task1 = Task.builder().title("Title")
+    //             .dueDate(LocalDate.now().minusMonths(2))
+    //             .status(TaskStatus.COMPLETED)
+    //             .build();
+
+    //     Task task2 = Task.builder().title("Title")
+    //             .dueDate(LocalDate.now().minusDays(10))
+    //             .status(TaskStatus.PENDING)
+    //             .build();
+
+    //     tasksRepository.save(task1);
+    //     tasksRepository.save(task2);
+
+    //     tasksServices.deleteOldTasks();
+
+    //     assertEquals(1, tasksRepository.findAll().size());
+    //     assertEquals(task2.getDueDate(), tasksRepository.findAll().get(0).getDueDate());
+    // }
 }
