@@ -28,7 +28,7 @@ public class UpdateTaskDTO {
     private TaskStatus status;
 
     public Task toTask() {
-        Task task = Task.builder().description(description).dueDate(dueDate).finishedAt(finishedAt).status(status).build();
+        Task task = Task.builder().title(title).description(description).dueDate(dueDate).finishedAt(finishedAt).status(status).build();
         return task;
     }
 }
