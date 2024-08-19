@@ -6,7 +6,7 @@ Este é um projeto de demonstração utilizando Spring Boot. O projeto inclui um
 
 ### Pré-requisitos
 
-- [Java 22](https://www.oracle.com/br/java/technologies/downloads/#jdk22-windows)
+- [Java 21](https://www.oracle.com/br/java/technologies/downloads/#jdk21-windows)
 - [Maven 3.9.4](https://maven.apache.org/download.cgi)
 - [Docker](https://www.docker.com/products/docker-desktop/)
 

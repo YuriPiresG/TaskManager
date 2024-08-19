@@ -45,12 +45,8 @@ public class TasksServices {
         Task foundTask = tasksRepository.findById(id)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
 
-        foundTask.setId(id);
-        foundTask.setDescription(task.getDescription());
-        foundTask.setDueDate(task.getDueDate());
-        foundTask.setFinishedAt(task.getFinishedAt());
-        foundTask.setStatus(task.getStatus());
-        foundTask.setTitle(task.getTitle());
+        foundTask = Task.builder().id(id).description(task.getDescription()).dueDate(task.getDueDate())
+                .finishedAt(task.getFinishedAt()).status(task.getStatus()).build();
 
         return tasksRepository.save(foundTask);
     }
