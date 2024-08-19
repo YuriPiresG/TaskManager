@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ApiExceptionHandler {
 
     @ExceptionHandler(value = ApiRequestException.class)
-    public ResponseEntity<Object> handleApiRequestException(ApiRequestException e) {
+    public ResponseEntity<ApiException> handleApiRequestException(ApiRequestException exception) {
         ApiException apiException = new ApiException(
-                e.getMessage(),
+                exception.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST,
                 ZonedDateTime.now());
@@ -25,9 +25,9 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(value = TaskNotFoundException.class)
-    public ResponseEntity<Object> handleTaskNotFoundException(TaskNotFoundException e) {
+    public ResponseEntity<ApiException> handleTaskNotFoundException(TaskNotFoundException exception) {
         ApiException apiException = new ApiException(
-                e.getMessage(),
+                exception.getMessage(),
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND,
                 ZonedDateTime.now());
@@ -35,9 +35,9 @@ public class ApiExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException exception) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
+        exception.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
