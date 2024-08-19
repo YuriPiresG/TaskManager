@@ -11,7 +11,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,11 +68,11 @@ public class TasksServicesTest {
                 .finishedAt(LocalDate.now())
                 .status(TaskStatus.COMPLETED)
                 .build();
-    
+
         Task savedTask = tasksRepository.save(task);
-    
+
         Task result = tasksServices.getTaskById(savedTask.getId());
-    
+
         assertEquals(savedTask.getId(), result.getId());
     }
 
@@ -189,25 +188,4 @@ public class TasksServicesTest {
         assertEquals(1, tasksRepository.findAll().size());
         assertEquals(TaskStatus.PENDING, tasksRepository.findAll().get(0).getStatus());
     }
-
-    // @Test
-    // public void testDeleteOldTasks() {
-    //     Task task1 = Task.builder().title("Title")
-    //             .dueDate(LocalDate.now().minusMonths(2))
-    //             .status(TaskStatus.COMPLETED)
-    //             .build();
-
-    //     Task task2 = Task.builder().title("Title")
-    //             .dueDate(LocalDate.now().minusDays(10))
-    //             .status(TaskStatus.PENDING)
-    //             .build();
-
-    //     tasksRepository.save(task1);
-    //     tasksRepository.save(task2);
-
-    //     tasksServices.deleteOldTasks();
-
-    //     assertEquals(1, tasksRepository.findAll().size());
-    //     assertEquals(task2.getDueDate(), tasksRepository.findAll().get(0).getDueDate());
-    // }
 }
