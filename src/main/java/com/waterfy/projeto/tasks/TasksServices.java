@@ -56,8 +56,7 @@ public class TasksServices {
     public void deleteTask(Long id) {
         tasksRepository.findById(id)
                 .orElseThrow(
-                    () -> new TaskNotFoundException("Task with id " + id + " not found")
-                    );
+                        () -> new TaskNotFoundException("Task with id " + id + " not found"));
         tasksRepository.deleteById(id);
     }
 
@@ -73,4 +72,20 @@ public class TasksServices {
         LocalDate oneMonthAgo = LocalDate.now().minusMonths(1);
         tasksRepository.deleteOldTasks(oneMonthAgo);
     }
+
+    public Task markTaskAsCompleted(Long id) {
+        Task foundTask = tasksRepository.findById(id)
+                .orElseThrow(() -> new TaskNotFoundException("Task with id " + id + " not found"));
+
+        foundTask = Task.builder()
+                .id(id)
+                .title(foundTask.getTitle())
+                .description(foundTask.getDescription())
+                .dueDate(foundTask.getDueDate())
+                .status(TaskStatus.COMPLETED)
+                .finishedAt(LocalDate.now())
+                .build();
+        return tasksRepository.save(foundTask);
+    }
+
 }

@@ -188,4 +188,22 @@ public class TasksServicesTest {
         assertEquals(1, tasksRepository.findAll().size());
         assertEquals(TaskStatus.PENDING, tasksRepository.findAll().get(0).getStatus());
     }
+
+    @Test
+    public void testSetCompletedTask() {
+        Task task = Task.builder()
+                .title("Title")
+                .dueDate(LocalDate.now())
+                .status(TaskStatus.PENDING)
+                .build();
+
+        tasksRepository.save(task);
+
+        tasksServices.markTaskAsCompleted(task.getId());
+
+        Task completedTask = tasksServices.getTaskById(task.getId());
+        
+        assertEquals(TaskStatus.COMPLETED, completedTask.getStatus());
+        assertEquals(LocalDate.now(), completedTask.getFinishedAt());
+    }
 }
